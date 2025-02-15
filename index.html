@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Расписание</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Dark Mode Styles */
+        body {
+            font-family: "Google Sans", sans-serif;
+            background-color: #000000; /* Black Background */
+            color: #ffffff; /* White Text */
+            margin: 0;
+            padding: 0;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+        }
+
+        .container {
+            padding: 20px;
+            max-width: 100%;
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 600; /* Bold */
+            text-align: center;
+            margin-bottom: 20px;
+            color: #ffffff; /* White */
+        }
+
+        /* Button Styles */
+        .btn-group {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .btn-secondary {
+            outline: none;
+            background-color: #666666; /* Gray Button - Default */
+            border: none;
+            color: #ffffff; /* White Text */
+            font-weight: 500;
+            padding: 10px 16px;
+            font-size: 16px;
+            transition: background-color 0.2s ease;
+            margin: 0 8px;
+            cursor: pointer;
+        }
+
+        .btn-secondary:hover {
+            background-color: #4d4d4f; /* Slightly Lighter Dark Gray on Hover */
+        }
+
+        .btn-secondary.active {
+            background: #0088cc; /* Blue Background for Active Button */
+            color: #ffffff; /* White Text for Active Button */
+            font-weight: 600; /* Bold for Active Button */
+        }
+
+        /* Day Container Styles */
+        .day-container {
+            background-color:#161618; /* Darker Gray Container */
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(255, 255, 255, 0.05);
+            padding: 15px;
+        }
+
+        .day-container h3 {
+            font-size: 20px;
+            font-weight: 600; /* Bold */
+            margin-bottom: 10px;
+            color: #c9d4d5; /* Slightly Lighter Text for Day Headers */
+        }
+
+        /* Discipline List Styles */
+        .discipline-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .discipline-item {
+            margin-bottom: 14px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            padding: 8px;
+            padding-left: 14px;
+            border-radius: 8px;
+            background: #212124;
+        }
+
+        .discipline-item:last-child {
+            margin-bottom: 0;
+        }
+
+
+
+        /* Responsive adjustments */
+        @media (max-width: 767px) { /* For small screens like mobile */
+            .btn-group {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn-secondary {
+                margin: 8px 0;
+                width: 80%; /* Buttons take full width on mobile */
+                text-align: center;
+            }
+        }
+
+        /* Optional: Increase font size for mobile */
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 24px;
+            }
+            .day-container h3 {
+                font-size: 18px;
+            }
+            .discipline-item {
+                font-size: 14px;
+            }
+            .btn-secondary {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Расписание Туризм</h1>
+
+        <div class="btn-group" role="group" aria-label="Week Switch">
+            <button type="button" class="btn btn-secondary" id="week1Btn">Неделя 1</button>
+            <button type="button" class="btn btn-secondary" id="week2Btn">Неделя 2</button>
+        </div>
+
+        <div id="schedule">
+            <!-- Day containers will be inserted here -->
+        </div>
+    </div>
+
+    <script>
+    const scheduleData = {
+        "понедельник": {
+            "обязательно": [
+                "`Философия 4-04`",
+                "`Философия 4-04`"
+            ],
+            "1 нед": [
+                "Стандарты обслуживания в туризме 4-04"
+            ],
+            "2 нед": []
+        },
+        "вторник": {
+            "обязательно": [
+                "`Стратегия развития туризма на северном кавказе 4-02`",
+            ],
+            "1 нед": [
+                "Чтк и этика 4-01",
+                "Чтк и этика 4-01"
+            ],
+            "2 нед": [
+                "Организация безопасности в туризме и гостеприимстве  4-01",
+                "Организация туристской деятельности 4-01"
+            ]
+            ,
+            "обязательно_after": [
+                "`Иностранный язык 4-01`",
+            ]
+        },
+        "среда": {
+            "обязательно": [
+                "`Физра (жен)`",
+                "`Организация безопасности в туризме и гостеприимстве 4-01`",
+                "`Организация туристской деятельности 4-02`"
+            ],
+            "1 нед": [],
+            "2 нед": []
+        },
+        "четверг": {
+            "обязательно": [
+                "`Физра (муж)`"
+            ],
+            "1 нед": [
+                "Психология делового общения 4-01",
+                "Психология делового общения 4-01"
+            ],
+            "2 нед": []
+        }
+    };
+
+    const week1Btn = document.getElementById('week1Btn');
+    const week2Btn = document.getElementById('week2Btn');
+    const scheduleContainer = document.getElementById('schedule');
+
+    // Function to set the active button
+    function setActiveButton(activeButton) {
+        week1Btn.classList.remove('active');
+        week2Btn.classList.remove('active');
+
+        if (activeButton === week1Btn) {
+            week1Btn.classList.add('active');
+        } else {
+            week2Btn.classList.add('active');
+        }
+    }
+
+    function getWeekNumber() {
+        const now = new Date();
+        const startOfYear = new Date(now.getFullYear(), 0, 1);
+        const days = Math.floor((now - startOfYear) / (24 * 60 * 60 * 1000));
+        let weekNumber = Math.ceil(days / 7);
+        return weekNumber;
+    }
+
+    function getCurrentWeekType() {
+        const weekNumber = getWeekNumber();
+        return (weekNumber % 2 === 0) ? true : false; // If week number is even, return true
+    }
+
+    function renderSchedule(week) {
+        scheduleContainer.innerHTML = ""; // Clear previous schedule
+
+        for (const day in scheduleData) {
+            const dayContainer = document.createElement('div');
+            dayContainer.classList.add('day-container');
+
+            const dayHeader = document.createElement('h3');
+            dayHeader.textContent = day;
+            dayContainer.appendChild(dayHeader);
+
+            const disciplines = [];
+
+            // Add "обязательно" disciplines
+            if (scheduleData[day]["обязательно"]) {
+                scheduleData[day]["обязательно"].forEach(disc => disciplines.push(disc.replace(/`/g, "")));
+            }
+
+            // Add week-specific disciplines
+            if (week === 1 && scheduleData[day]["1 нед"]) {
+                scheduleData[day]["1 нед"].forEach(disc => disciplines.push(disc));
+            } else if (week === 2 && scheduleData[day]["2 нед"]) {
+                scheduleData[day]["2 нед"].forEach(disc => disciplines.push(disc));
+            }
+
+            // Add "обязательно_after" disciplines
+            if (scheduleData[day]["обязательно_after"]) {
+                scheduleData[day]["обязательно_after"].forEach(disc => disciplines.push(disc.replace(/`/g, "")));
+            }
+
+            const disciplineList = document.createElement('ul');
+            disciplineList.classList.add('discipline-list');
+
+            disciplines.forEach(discipline => {
+                const disciplineItem = document.createElement('li');
+                disciplineItem.classList.add('discipline-item');
+                disciplineItem.textContent = discipline;
+                disciplineList.appendChild(disciplineItem);
+            });
+
+            dayContainer.appendChild(disciplineList);
+            scheduleContainer.appendChild(dayContainer);
+        }
+    }
+
+    function updateScheduleBasedOnCurrentWeek() {
+        const currentWeekType = getCurrentWeekType();
+        if (currentWeekType) {
+            setActiveButton(week1Btn);
+            renderSchedule(1);
+        } else {
+            setActiveButton(week2Btn);
+            renderSchedule(2);
+        }
+    }
+
+    // Function to determine if the current Monday is an even or odd week
+    function isCurrentMondayEvenWeek() {
+        const now = new Date();
+        const day = now.getDay(); // 0 (Sunday) to 6 (Saturday)
+        const diff = now.getDate() - day + (day === 0 ? -6 : 1); // Adjust to Monday
+        const monday = new Date(now.setDate(diff));
+        const startOfYear = new Date(monday.getFullYear(), 0, 1);
+        const days = Math.floor((monday - startOfYear) / (24 * 60 * 60 * 1000));
+        const weekNumber = Math.ceil(days / 7);
+        return (weekNumber % 2 === 0); // Return true if even week
+    }
+
+    // Initial setup - determine week on load based on the current Monday
+    function initialSetup() {
+        const isEven = isCurrentMondayEvenWeek();
+        if (isEven) {
+            setActiveButton(week1Btn);
+            renderSchedule(1);
+        } else {
+            setActiveButton(week2Btn);
+            renderSchedule(2);
+        }
+    }
+
+    week1Btn.addEventListener('click', () => {
+        setActiveButton(week1Btn);
+        renderSchedule(1);
+    });
+
+    week2Btn.addEventListener('click', () => {
+        setActiveButton(week2Btn);
+        renderSchedule(2);
+    });
+
+    function setActiveButton(activeButton) {
+            let inActiveButton = (activeButton === week1Btn) ? week2Btn : week1Btn;
+
+            week1Btn.classList.remove('active');
+            week2Btn.classList.remove('active');
+
+            activeButton.style.backgroundColor = '#0088cc'; // Blue for active
+            inActiveButton.style.backgroundColor = '#666666'; // Gray for inactive
+
+            activeButton.classList.add('active');
+        }
+
+    initialSetup(); // Call initial setup
+    </script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
