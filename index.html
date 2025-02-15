@@ -290,7 +290,7 @@
         const startOfYear = new Date(monday.getFullYear(), 0, 1);
         const days = Math.floor((monday - startOfYear) / (24 * 60 * 60 * 1000));
         const weekNumber = Math.ceil(days / 7);
-        return (weekNumber % 2 === 0); // Return true if even week
+        return (weekNumber % 2 !== 0); // Return true if even week
     }
 
     // Initial setup - determine week on load based on the current Monday
